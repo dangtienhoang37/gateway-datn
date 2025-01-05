@@ -1,0 +1,44 @@
+server:
+  address: 0.0.0.0
+  port: 8888  # Port for the API Gateway server
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.boot: INFO  # Log cho ứng dụng Spring Boot
+
+spring:
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
+
+  application:
+    name: apiGateway  # Tên ứng dụng dùng trong discovery, logging, v.v.
+
+  cloud:
+    gateway:
+      routes:
+        - id: common_service  # Unique identifier for the route
+          uri: lb://common-service  # The backend service's URL
+          predicates:
+            - Path=/api/v1/**  # Định nghĩa predicate cho path bắt đầu với /api/v1/
+
+        - id: parking_service  # Unique identifier for the route
+          uri: lb://parking-service  # The backend service's URL
+          predicates:
+            - Path=/api/v2/**  # Định nghĩa predicate cho path bắt đầu với /api/v1/
+
+        - id: payment_service  # Unique identifier for the route
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/v3/**
+#
+#        - id: ocr_service  # Unique identifier for the route
+#          uri: lb://parking-service  # The backend service's URL
+#          predicates:
+#            - Path=/api/v1/**  # Định nghĩa predicate cho path bắt đầu với /api/v1/
+
+jwt:
+  signerKey: Ry5OGtcJ+5dTSUV30C1LMaNew2uOotz0zpaBT/F9DJ5fLbcC5EoYtK/Ldh3H8VZo  # Khóa bí mật để ký JWT
