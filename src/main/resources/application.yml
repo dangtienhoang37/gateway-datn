@@ -17,28 +17,43 @@ spring:
   application:
     name: apiGateway  # Tên ứng dụng dùng trong discovery, logging, v.v.
 
+  web:
+    resources:
+      add-mappings: false  # Ngăn Spring Boot tìm kiếm static resource
+
   cloud:
+    loadbalancer:
+      ribbon:
+        enabled: true
+    discovery:
+      enabled: true  # Kích hoạt Spring Cloud Discovery để kết nối Eureka
+
     gateway:
       routes:
-        - id: common_service  # Unique identifier for the route
-          uri: lb://common-service  # The backend service's URL
-          predicates:
-            - Path=/api/v1/**  # Định nghĩa predicate cho path bắt đầu với /api/v1/
 
-        - id: parking_service  # Unique identifier for the route
-          uri: lb://parking-service  # The backend service's URL
+        - id: common_service
+          uri: lb://common-service
           predicates:
-            - Path=/api/v2/**  # Định nghĩa predicate cho path bắt đầu với /api/v1/
+            - Path=/api/v1/**
 
-        - id: payment_service  # Unique identifier for the route
-          uri: lb://payment-service
+        - id: parking_service
+          uri: lb://parking-service  # Trỏ đúng service
+          predicates:
+            - Path=/api/v2/**
+
+        - id: payment_service
+          uri: lb://payment-service  # Trỏ đúng service
           predicates:
             - Path=/api/v3/**
-#
-#        - id: ocr_service  # Unique identifier for the route
-#          uri: lb://parking-service  # The backend service's URL
-#          predicates:
-#            - Path=/api/v1/**  # Định nghĩa predicate cho path bắt đầu với /api/v1/
 
 jwt:
   signerKey: Ry5OGtcJ+5dTSUV30C1LMaNew2uOotz0zpaBT/F9DJ5fLbcC5EoYtK/Ldh3H8VZo  # Khóa bí mật để ký JWT
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-service:8761/eureka/  # Cấu hình URL Eureka từ biến môi trường
+  instance:
+    preferIpAddress: true  # Ưu tiên sử dụng IP thay vì hostname cho Eureka
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 10

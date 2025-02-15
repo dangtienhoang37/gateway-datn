@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
 public class AuthenticationFilter implements GlobalFilter, Ordered {
     @Autowired
+    @Lazy
     IdentityService identityService;
     @Autowired
     ObjectMapper objectMapper;
@@ -57,6 +59,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             log.info("enter unauthen ");
 
             try {
+                log.info("khong co bearer ");
+
                 return unauthenticated(exchange.getResponse());
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -77,13 +81,19 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                 return chain.filter(exchange);
             } else {
                 try {
+                    log.info("khong sucess ");
+
                     return unauthenticated(exchange.getResponse());
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
             }
         }).onErrorResume(throwable -> {
+            log.info("loi tai",throwable);
+
             try {
+                log.info("loi ");
+
                 return unauthenticated(exchange.getResponse());
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);

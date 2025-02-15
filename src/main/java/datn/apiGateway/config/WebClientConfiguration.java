@@ -1,6 +1,7 @@
 package datn.apiGateway.config;
 
 import datn.apiGateway.repository.IdentityClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -9,18 +10,26 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-
+//import org.springframework.cloud.client.loadbalancer.L
 import java.util.List;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient.Builder;
 
 
 @Configuration
 public class WebClientConfiguration {
+//    @Bean
+//    @LoadBalanced
+//        // Bật tính năng load balancing cho WebClient
+//    public WebClient.Builder webClient() {
+//        return WebClient.builder();
+    //    }
     @Bean
-    WebClient webClient() {
-        return WebClient.builder()
-                .baseUrl("http://localhost:8081/api/v1")
-                .build();
+    @LoadBalanced
+    public WebClient webClient(Builder webClientBuilder) {
+        return webClientBuilder.build(); // Cấu hình baseUrl hoặc dịch vụ theo yêu cầu
     }
+
     @Bean
     CorsWebFilter corsWebFilter(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
